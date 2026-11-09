@@ -37,4 +37,13 @@ public class ApplicationDbContext : DbContext
             .HasIndex(c => new { c.Name, c.Shift })
             .IsUnique();
     }
+
+
+    public async Task<SchoolClass?> GetClassForUpdateAsync(int classId)
+    {
+         return await SchoolClasses
+        .FromSqlInterpolated(
+            $"SELECT * FROM \"SchoolClasses\" WHERE \"Id\" = {classId} FOR UPDATE")
+        .FirstOrDefaultAsync();
+    }
 }
