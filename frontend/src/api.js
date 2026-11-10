@@ -65,3 +65,25 @@ export async function createClass(classDetails) {
 
   return data;
 }
+
+
+
+export async function confirmHold(holdId, studentId) {
+  const response = await fetch(
+    `${API_BASE_URL}/holds/${holdId}/confirm`,
+    {
+      method: "POST",
+      headers: {
+        "X-Student-Id": studentId,
+      },
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Payment confirmation failed.");
+  }
+
+  return data;
+}

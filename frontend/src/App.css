@@ -273,3 +273,91 @@ footer {
 .error-message {
   color: #c0392b;
 }
+
+
+/* Input visibility in light and dark mode */
+.field input,
+.field select,
+.field textarea,
+input,
+select,
+textarea {
+  color: #172033;
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  color-scheme: light;
+}
+
+.field input::placeholder,
+input::placeholder,
+textarea::placeholder {
+  color: #64748b;
+  opacity: 1;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #3156d3;
+  outline: none;
+  box-shadow: 0 0 0 3px rgb(49 86 211 / 12%);
+}
+
+/* Respect the system dark-mode preference */
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #111827;
+    color: #f1f5f9;
+  }
+
+  .header,
+  .panel {
+    background: #1f2937;
+    border-color: #374151;
+  }
+
+  .brand p,
+  .welcome > p:last-child,
+  .section-heading p,
+  .class-card p,
+  footer {
+    color: #cbd5e1;
+  }
+
+  .class-card {
+    border-color: #374151;
+  }
+
+  .empty-state {
+    border-color: #475569;
+  }
+
+  .empty-state span {
+    color: #cbd5e1;
+  }
+
+  .field label {
+    color: #f1f5f9;
+  }
+
+  .field input,
+  .field select,
+  .field textarea,
+  input,
+  select,
+  textarea {
+    color: #f8fafc;
+    background-color: #273449;
+    border-color: #64748b;
+    color-scheme: dark;
+  }
+
+  .field input::placeholder,
+  input::placeholder,
+  textarea::placeholder {
+    color: #aab7ca;
+  }
+}

@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import HomePage from "./HomePage";
+import AdminPage from "./AdminPage";
+import AdminPanel from "./AdminPanel";
 import {
   getClasses,
   createHold,
   getMyHolds,
-  createClass,
+  confirmHold,
 } from "./api";
 
 import "./App.css";
@@ -12,6 +14,7 @@ import "./App.css";
 function App() {
   const [currentPage, setCurrentPage] = useState("home");
   const [studentId, setStudentId] = useState("");
+  const [admissionsStudentId, setAdmissionsStudentId] = useState("");
   const [studentName, setStudentName] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
   const [guardianName, setGuardianName] = useState("");
@@ -22,13 +25,6 @@ function App() {
   const [classesLoading, setClassesLoading] = useState(true);
   const [classesError, setClassesError] = useState("");
   const [selectedClassId, setSelectedClassId] = useState("");
-const [className, setClassName] = useState("");
-const [classShift, setClassShift] = useState("Morning");
-const [totalSeats, setTotalSeats] = useState("");
-const [adminMessage, setAdminMessage] = useState("");
-const [adminError, setAdminError] = useState("");
-const [adminSubmitting, setAdminSubmitting] = useState(false);
-
   const [hold, setHold] = useState(null);
   const [formError, setFormError] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -53,8 +49,9 @@ useEffect(() => {
 }, []);
 
 async function loadMyAdmissions() {
-  if (!studentId.trim()) {
-    setHoldsError("Enter your Birth Registration Number first.");
+  if (!/^\d{17}$/.test(admissionsStudentId.trim())) {
+    setHoldsError("Enter a valid 17-digit Birth Registration Number.");
+    setMyHolds([]);
     return;
   }
 
@@ -62,51 +59,38 @@ async function loadMyAdmissions() {
     setHoldsLoading(true);
     setHoldsError("");
 
-    const records = await getMyHolds(studentId);
+    const records = await getMyHolds(admissionsStudentId.trim());
     setMyHolds(records);
   } catch (error) {
     setHoldsError(error.message);
+    setMyHolds([]);
   } finally {
     setHoldsLoading(false);
   }
 }
 
-
-
-async function handleCreateClass(event) {
-  event.preventDefault();
-
-  setAdminMessage("");
-  setAdminError("");
-
-  if (!className.trim() || !totalSeats || Number(totalSeats) <= 0) {
-    setAdminError("Please enter a class name and a valid seat number.");
-    return;
-  }
-
+async function handlePayment(holdId = hold.id, ownerStudentId = studentId) {
   try {
-    setAdminSubmitting(true);
+    setFormError("");
 
-    await createClass({
-      name: className.trim(),
-      shift: classShift,
-      totalSeats: Number(totalSeats),
-    });
+    const result = await confirmHold(holdId, ownerStudentId);
 
-    setAdminMessage("Class created successfully.");
+    setHold((previous) =>
+      previous && previous.id === holdId
+        ? { ...previous, ...result }
+        : previous
+    );
 
-    setClassName("");
-    setClassShift("Morning");
-    setTotalSeats("");
-
-    const updatedClasses = await getClasses();
-    setClasses(updatedClasses);
+    const updatedHolds = await getMyHolds(ownerStudentId);
+    setMyHolds(updatedHolds);
   } catch (error) {
-    setAdminError(error.message);
-  } finally {
-    setAdminSubmitting(false);
+    setFormError(error.message);
   }
 }
+
+
+
+
 
 
    if (currentPage === "home") {
@@ -118,16 +102,44 @@ async function handleCreateClass(event) {
     );
   }
 
+  if (currentPage === "admin") {
+  return (
+    <AdminPage
+      onBack={() => setCurrentPage("home")}
+      onLogin={() => setCurrentPage("admin-panel")}
+    />
+  );
+}
+
+if (currentPage === "admin-panel") {
+  return (
+    <AdminPanel
+      onHome={() => setCurrentPage("home")}
+    />
+  );
+}
+
   return (
     <div className="app">
       <header className="header">
-        <div className="brand">
-          <div className="brand-icon">S</div>
-          <div>
-            <h1>School Admission</h1>
-            <p>Admission Management System</p>
-          </div>
-        </div>
+        <div
+  className="brand"
+  onClick={() => setCurrentPage("home")}
+  role="button"
+  tabIndex={0}
+  style={{ cursor: "pointer" }}
+  onKeyDown={(event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      setCurrentPage("home");
+    }
+  }}
+>
+  <div className="brand-icon">S</div>
+  <div>
+    <h1>School Admission</h1>
+    <p>Admission Management System</p>
+  </div>
+</div>
         <button
   type="button"
   className="primary-button"
@@ -156,8 +168,9 @@ async function handleCreateClass(event) {
             <span className="step-label">STEP 1</span>
           </div>
 
-          <form
-           onSubmit={async (event) => {
+         <form
+  id="admissionForm"
+  onSubmit={async (event) => {
   event.preventDefault();
   setFormError("");
   setHold(null);
@@ -252,13 +265,7 @@ setMyHolds(records);
               </div>
             </div>
 
-            <button
-  type="submit"
-  className="primary-button"
-  disabled={submitting}
->
-  {submitting ? "Processing..." : "Reserve My Seat"}
-</button>
+        
           </form>
 
 {formError && (
@@ -271,6 +278,15 @@ setMyHolds(records);
     <p>Hold ID: {hold.id}</p>
     <p>Status: {hold.status}</p>
     <p>Expires: {hold.expiresAt}</p>
+    {hold.status === "HELD" && (
+  <button
+    type="button"
+    className="primary-button"
+    onClick={handlePayment}
+  >
+    Pay Admission Fee
+  </button>
+)}
   </div>
 )}
 
@@ -326,6 +342,17 @@ setMyHolds(records);
     Selected class ID: {selectedClassId}
   </p>
 )}
+
+{(
+  <button
+    type="submit"
+    form="admissionForm"
+    className="primary-button"
+    disabled={submitting}
+  >
+    {submitting ? "Processing..." : "Reserve My Seat"}
+  </button>
+)}
         </section>
 
 
@@ -335,6 +362,18 @@ setMyHolds(records);
     <div>
       <h3>My Admissions</h3>
       <p>View your seat reservations and admission status.</p>
+      <div className="field">
+  <label htmlFor="admissionsStudentId">
+    Birth Registration Number
+  </label>
+  <input
+    id="admissionsStudentId"
+    value={admissionsStudentId}
+    onChange={(event) => setAdmissionsStudentId(event.target.value)}
+    placeholder="Enter your 17-digit number"
+    maxLength={17}
+  />
+</div>
       <button
   type="button"
   className="primary-button"
@@ -363,14 +402,26 @@ setMyHolds(records);
   {myHolds.length > 0 && (
     <div className="class-list">
       {myHolds.map((item) => (
-        <div className="class-card" key={item.id}>
-          <div>
-            <h4>Admission Reservation</h4>
-            <p>Status: {item.status}</p>
-            <p>Hold ID: {item.id}</p>
-          </div>
-        </div>
-      ))}
+  <div className="class-card" key={item.id}>
+    <div>
+      <h4>Admission Reservation</h4>
+      <p>Status: {item.status}</p>
+      <p>Hold ID: {item.id}</p>
+
+      {item.status === "HELD" && (
+        <>
+          <button
+            type="button"
+            className="primary-button"
+            onClick={() => handlePayment(item.id, admissionsStudentId.trim())}
+          >
+            Pay Admission Fee
+          </button>
+        </>
+      )}
+    </div>
+  </div>
+))}
     </div>
   )}
 </section>
