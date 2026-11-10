@@ -140,13 +140,25 @@ if (currentPage === "admin-panel") {
     <p>Admission Management System</p>
   </div>
 </div>
-        <button
-  type="button"
-  className="primary-button"
-  onClick={() => setCurrentPage("home")}
->
-  Home
-</button>
+       
+<div className="header-actions">
+  <button
+    type="button"
+    className="primary-button"
+    onClick={() => setCurrentPage("home")}
+  >
+    Home
+  </button>
+
+  <button
+    type="button"
+    className="primary-button"
+    onClick={() => setCurrentPage("admin")}
+  >
+    Admin
+  </button>
+</div>
+
       </header>
 
       <main className="container">
@@ -272,23 +284,51 @@ setMyHolds(records);
   <p className="error-message">{formError}</p>
 )}
 
+
 {hold && (
-  <div className="success-message">
-    <h4>Seat Reserved Successfully!</h4>
-    <p>Hold ID: {hold.id}</p>
-    <p>Status: {hold.status}</p>
-    <p>Expires: {hold.expiresAt}</p>
-    {hold.status === "HELD" && (
-  <button
-    type="button"
-    className="primary-button"
-    onClick={handlePayment}
-  >
-    Pay Admission Fee
-  </button>
-)}
+  <div className="modal-overlay">
+    <div className="reservation-modal">
+      <button
+        type="button"
+        className="modal-close"
+        onClick={() => setHold(null)}
+        aria-label="Close popup"
+      >
+        ×
+      </button>
+
+      <div className="success-icon">✓</div>
+
+      <h2>Seat Reserved Successfully!</h2>
+      <p className="modal-description">
+        Your seat has been temporarily reserved.
+      </p>
+
+      <div className="reservation-details">
+        <p><strong>Hold ID:</strong> {hold.id}</p>
+        <p><strong>Status:</strong> {hold.status}</p>
+        <p><strong>Expires:</strong> {hold.expiresAt}</p>
+      </div>
+
+      {hold.status === "HELD" && (
+        <button
+          type="button"
+          className="primary-button modal-payment-button"
+          onClick={() => handlePayment(hold.id, studentId)}
+        >
+          Pay Admission Fee
+        </button>
+      )}
+
+      {hold.status === "CONFIRMED" && (
+        <p className="success-message">
+          Payment successful! Your admission is confirmed.
+        </p>
+      )}
+    </div>
   </div>
 )}
+
 
         </section>
 
@@ -319,9 +359,12 @@ setMyHolds(records);
     <p>{schoolClass.shift} Shift</p>
   </div>
 
-  <span className="seat-count">
-    {schoolClass.totalSeats} seats
-  </span>
+ <div className="seat-count">
+  <p>Total: {schoolClass.totalSeats}</p>
+  <p>Held: {schoolClass.heldSeats}</p>
+  <p>Confirmed: {schoolClass.confirmedSeats}</p>
+  <p>Available: {schoolClass.availableSeats}</p>
+</div>
 
   <button
     type="button"

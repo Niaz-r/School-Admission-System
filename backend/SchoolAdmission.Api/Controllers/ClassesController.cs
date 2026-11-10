@@ -1,3 +1,4 @@
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SchoolAdmission.Api.Data;
@@ -19,12 +20,43 @@ public class ClassesController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetClasses()
     {
+        var now = DateTime.UtcNow;
+
         var classes = await _context.SchoolClasses
             .OrderBy(c => c.Name)
             .ThenBy(c => c.Shift)
+            .Select(c => new
+            {
+                c.Id,
+                c.Name,
+                c.Shift,
+                c.TotalSeats,
+
+                HeldSeats = _context.AdmissionHolds.Count(h =>
+                    h.SchoolClassId == c.Id &&
+                    h.Status == "HELD" &&
+                    h.ExpiresAt > now),
+
+                ConfirmedSeats = _context.AdmissionHolds.Count(h =>
+                    h.SchoolClassId == c.Id &&
+                    h.Status == "CONFIRMED")
+            })
             .ToListAsync();
 
-        return Ok(classes);
+        var result = classes.Select(c => new
+        {
+            c.Id,
+            c.Name,
+            c.Shift,
+            c.TotalSeats,
+            c.HeldSeats,
+            c.ConfirmedSeats,
+            AvailableSeats = Math.Max(
+                0,
+                c.TotalSeats - c.HeldSeats - c.ConfirmedSeats)
+        });
+
+        return Ok(result);
     }
 
     [HttpGet("{classId:int}")]

@@ -180,9 +180,13 @@ function AdminPanel({ onHome }) {
                     <p>{schoolClass.shift} Shift</p>
                   </div>
 
-                  <span className="seat-count">
-                    {schoolClass.totalSeats} seats
-                  </span>
+                  <div className="seat-count">
+  <p>Total: {schoolClass.totalSeats}</p>
+  <p>Held: {schoolClass.heldSeats}</p>
+  <p>Confirmed: {schoolClass.confirmedSeats}</p>
+  <p>Available: {schoolClass.availableSeats}</p>
+</div>
+
                 </div>
               ))}
             </div>
