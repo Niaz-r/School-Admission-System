@@ -11,6 +11,7 @@ export async function getClasses() {
   return response.json();
 }
 
+
 export async function createHold(classId, studentId, studentDetails) {
   const response = await fetch(
     `${API_BASE_URL}/classes/${classId}/holds`,
@@ -24,14 +25,25 @@ export async function createHold(classId, studentId, studentDetails) {
     }
   );
 
-  const data = await response.json();
+  const responseText = await response.text();
+
+  let data = {};
+
+  try {
+    data = responseText ? JSON.parse(responseText) : {};
+  } catch {
+    data = { message: responseText };
+  }
 
   if (!response.ok) {
-    throw new Error(data.message || "Could not create admission hold.");
+    throw new Error(
+      data.message || data.title || "Could not create admission hold."
+    );
   }
 
   return data;
 }
+
 
 export async function getMyHolds(studentId) {
   const response = await fetch(`${API_BASE_URL}/me/holds`, {
@@ -87,3 +99,33 @@ export async function confirmHold(holdId, studentId) {
 
   return data;
 }
+
+
+
+export async function cancelHold(holdId, studentId) {
+  const response = await fetch(
+    `${API_BASE_URL}/holds/${holdId}`,
+    {
+      method: "DELETE",
+      headers: {
+        "X-Student-Id": studentId,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    let message = "Could not cancel reservation.";
+
+    try {
+      const data = await response.json();
+      message = data.message || message;
+    } catch {
+      // The API may return an empty response.
+    }
+
+    throw new Error(message);
+  }
+
+  return true;
+}
+

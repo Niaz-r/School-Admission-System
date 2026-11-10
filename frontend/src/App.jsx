@@ -7,6 +7,7 @@ import {
   createHold,
   getMyHolds,
   confirmHold,
+   cancelHold,
 } from "./api";
 
 import "./App.css";
@@ -14,7 +15,8 @@ import "./App.css";
 function App() {
   const [currentPage, setCurrentPage] = useState("home");
   const [studentId, setStudentId] = useState("");
-  const [admissionsStudentId, setAdmissionsStudentId] = useState("");
+  const admissionsStudentId = studentId;
+  const setAdmissionsStudentId = setStudentId;
   const [studentName, setStudentName] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
   const [guardianName, setGuardianName] = useState("");
@@ -68,6 +70,16 @@ async function loadMyAdmissions() {
     setHoldsLoading(false);
   }
 }
+useEffect(() => {
+  if (!/^\d{17}$/.test(studentId.trim())) {
+    setMyHolds([]);
+    setHoldsError("");
+    return;
+  }
+
+  loadMyAdmissions();
+}, [studentId]);
+
 
 async function handlePayment(holdId = hold.id, ownerStudentId = studentId) {
   try {
@@ -83,6 +95,31 @@ async function handlePayment(holdId = hold.id, ownerStudentId = studentId) {
 
     const updatedHolds = await getMyHolds(ownerStudentId);
     setMyHolds(updatedHolds);
+    const updatedClasses = await getClasses();
+setClasses(updatedClasses);
+  } catch (error) {
+    setFormError(error.message);
+  }
+}
+
+
+async function handleCancel(holdId, ownerStudentId) {
+  try {
+    setFormError("");
+
+    await cancelHold(holdId, ownerStudentId);
+
+    setHold((previous) =>
+      previous && previous.id === holdId
+        ? { ...previous, status: "CANCELLED" }
+        : previous
+    );
+
+    const updatedHolds = await getMyHolds(ownerStudentId);
+    setMyHolds(updatedHolds);
+
+    const updatedClasses = await getClasses();
+    setClasses(updatedClasses);
   } catch (error) {
     setFormError(error.message);
   }
@@ -210,6 +247,8 @@ if (currentPage === "admin-panel") {
     setHold(result);
     const records = await getMyHolds(studentId);
 setMyHolds(records);
+const updatedClasses = await getClasses();
+setClasses(updatedClasses);
   } catch (error) {
     setFormError(error.message);
   } finally {
@@ -318,7 +357,18 @@ setMyHolds(records);
         >
           Pay Admission Fee
         </button>
+ 
       )}
+
+      {hold.status === "HELD" && (
+  <button
+    type="button"
+    className="cancel-button"
+    onClick={() => handleCancel(hold.id, studentId)}
+  >
+    Cancel Reservation
+  </button>
+)}
 
       {hold.status === "CONFIRMED" && (
         <p className="success-message">
@@ -367,13 +417,18 @@ setMyHolds(records);
 </div>
 
   <button
-    type="button"
-    onClick={() => setSelectedClassId(String(schoolClass.id))}
-  >
-    {selectedClassId === String(schoolClass.id)
-      ? "Selected"
-      : "Select Class"}
-  </button>
+  type="button"
+  className={
+    selectedClassId === String(schoolClass.id)
+      ? "selected-class-button"
+      : ""
+  }
+  onClick={() => setSelectedClassId(String(schoolClass.id))}
+>
+  {selectedClassId === String(schoolClass.id)
+    ? "Selected"
+    : "Select Class"}
+</button>
 </div>
 
     ))}
@@ -462,6 +517,18 @@ setMyHolds(records);
           </button>
         </>
       )}
+
+      {item.status === "HELD" && (
+  <button
+    type="button"
+    className="cancel-button"
+    onClick={() =>
+      handleCancel(item.id, admissionsStudentId.trim())
+    }
+  >
+    Cancel Reservation
+  </button>
+)}
     </div>
   </div>
 ))}
