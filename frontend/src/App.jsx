@@ -1,21 +1,40 @@
-
 import { useEffect, useState } from "react";
-import { getClasses, createHold } from "./api";
+import HomePage from "./HomePage";
+import {
+  getClasses,
+  createHold,
+  getMyHolds,
+  createClass,
+} from "./api";
+
 import "./App.css";
 
 function App() {
+  const [currentPage, setCurrentPage] = useState("home");
   const [studentId, setStudentId] = useState("");
   const [studentName, setStudentName] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
   const [guardianName, setGuardianName] = useState("");
   const [guardianPhone, setGuardianPhone] = useState("");
   const [classes, setClasses] = useState([]);
+
+
   const [classesLoading, setClassesLoading] = useState(true);
   const [classesError, setClassesError] = useState("");
   const [selectedClassId, setSelectedClassId] = useState("");
+const [className, setClassName] = useState("");
+const [classShift, setClassShift] = useState("Morning");
+const [totalSeats, setTotalSeats] = useState("");
+const [adminMessage, setAdminMessage] = useState("");
+const [adminError, setAdminError] = useState("");
+const [adminSubmitting, setAdminSubmitting] = useState(false);
+
   const [hold, setHold] = useState(null);
   const [formError, setFormError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [myHolds, setMyHolds] = useState([]);
+  const [holdsLoading, setHoldsLoading] = useState(false);
+  const [holdsError, setHoldsError] = useState("");
 
 
 useEffect(() => {
@@ -33,6 +52,71 @@ useEffect(() => {
   loadClasses();
 }, []);
 
+async function loadMyAdmissions() {
+  if (!studentId.trim()) {
+    setHoldsError("Enter your Birth Registration Number first.");
+    return;
+  }
+
+  try {
+    setHoldsLoading(true);
+    setHoldsError("");
+
+    const records = await getMyHolds(studentId);
+    setMyHolds(records);
+  } catch (error) {
+    setHoldsError(error.message);
+  } finally {
+    setHoldsLoading(false);
+  }
+}
+
+
+
+async function handleCreateClass(event) {
+  event.preventDefault();
+
+  setAdminMessage("");
+  setAdminError("");
+
+  if (!className.trim() || !totalSeats || Number(totalSeats) <= 0) {
+    setAdminError("Please enter a class name and a valid seat number.");
+    return;
+  }
+
+  try {
+    setAdminSubmitting(true);
+
+    await createClass({
+      name: className.trim(),
+      shift: classShift,
+      totalSeats: Number(totalSeats),
+    });
+
+    setAdminMessage("Class created successfully.");
+
+    setClassName("");
+    setClassShift("Morning");
+    setTotalSeats("");
+
+    const updatedClasses = await getClasses();
+    setClasses(updatedClasses);
+  } catch (error) {
+    setAdminError(error.message);
+  } finally {
+    setAdminSubmitting(false);
+  }
+}
+
+
+   if (currentPage === "home") {
+    return (
+      <HomePage
+        onAdmissionClick={() => setCurrentPage("admission")}
+        onAdminClick={() => setCurrentPage("admin")}
+      />
+    );
+  }
 
   return (
     <div className="app">
@@ -44,7 +128,13 @@ useEffect(() => {
             <p>Admission Management System</p>
           </div>
         </div>
-        <span className="header-label">Student Portal</span>
+        <button
+  type="button"
+  className="primary-button"
+  onClick={() => setCurrentPage("home")}
+>
+  Home
+</button>
       </header>
 
       <main className="container">
@@ -91,7 +181,10 @@ useEffect(() => {
       }
     );
 
+
     setHold(result);
+    const records = await getMyHolds(studentId);
+setMyHolds(records);
   } catch (error) {
     setFormError(error.message);
   } finally {
@@ -235,20 +328,52 @@ useEffect(() => {
 )}
         </section>
 
-        <section className="panel">
-          <div className="section-heading">
-            <div>
-              <h3>My Admissions</h3>
-              <p>View your seat reservations and admission status.</p>
-            </div>
-          </div>
 
-          <div className="empty-state">
-            <div className="empty-icon">▤</div>
-            <p>No admission records displayed yet.</p>
-            <span>Your holds will appear here after we connect the API.</span>
+
+        <section className="panel">
+  <div className="section-heading">
+    <div>
+      <h3>My Admissions</h3>
+      <p>View your seat reservations and admission status.</p>
+      <button
+  type="button"
+  className="primary-button"
+  onClick={loadMyAdmissions}
+  disabled={holdsLoading}
+>
+  {holdsLoading ? "Loading..." : "Load My Admissions"}
+</button>
+    </div>
+  </div>
+
+  {holdsLoading && <p>Loading admission records...</p>}
+
+  {holdsError && (
+    <p className="error-message">{holdsError}</p>
+  )}
+
+  {!holdsLoading && !holdsError && myHolds.length === 0 && (
+    <div className="empty-state">
+      <div className="empty-icon">▤</div>
+      <p>No admission records found.</p>
+      <span>Your reservations will appear here.</span>
+    </div>
+  )}
+
+  {myHolds.length > 0 && (
+    <div className="class-list">
+      {myHolds.map((item) => (
+        <div className="class-card" key={item.id}>
+          <div>
+            <h4>Admission Reservation</h4>
+            <p>Status: {item.status}</p>
+            <p>Hold ID: {item.id}</p>
           </div>
-        </section>
+        </div>
+      ))}
+    </div>
+  )}
+</section>
 
         <footer>
           School Admission System · Student Portal
