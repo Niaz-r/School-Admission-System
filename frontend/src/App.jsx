@@ -171,11 +171,11 @@ if (currentPage === "admin-panel") {
     }
   }}
 >
-  <div className="brand-icon">S</div>
-  <div>
-    <h1>School Admission</h1>
-    <p>Admission Management System</p>
-  </div>
+  <div className="brand-icon">O</div>
+<div>
+  <h1>Onnorokom Projukti School</h1>
+  <p>Online School Admission Portal</p>
+</div>
 </div>
        
 <div className="header-actions">
@@ -200,19 +200,19 @@ if (currentPage === "admin-panel") {
 
       <main className="container">
         <section className="welcome">
-          <p className="eyebrow">ADMISSIONS 2027</p>
-          <h2>Start your admission journey</h2>
-          <p>
-            Explore available classes and reserve your seat.
-            Complete your information to get started.
-          </p>
+         <p className="eyebrow">ADMISSION OPEN 2027</p>
+<h2>ভর্তি কার্যক্রম চলছে — Admission Open!</h2>
+<p>
+  Onnorokom Projukti School-এ আপনার সন্তানের ভর্তি আবেদন সম্পন্ন করুন।
+  Explore available classes and reserve your seat.
+</p>
         </section>
 
         <section className="panel">
           <div className="section-heading">
             <div>
-              <h3>Student Information</h3>
-              <p>Enter your details to continue.</p>
+              <h3>শিক্ষার্থীর তথ্য · Student Information</h3>
+<p>ভর্তির আবেদন সম্পন্ন করতে নিচের তথ্যগুলো পূরণ করুন।</p>
             </div>
             <span className="step-label">STEP 1</span>
           </div>
@@ -259,19 +259,19 @@ setClasses(updatedClasses);
             <div className="form-grid">
               <div className="field">
                 <label htmlFor="studentId">
-                  Birth Registration Number
+                  জন্ম নিবন্ধন নম্বর · Birth Registration Number
                 </label>
                 <input
                   id="studentId"
                   value={studentId}
                   onChange={(event) => setStudentId(event.target.value)}
-                  placeholder="Enter birth registration number"
+                  placeholder="১৭ সংখ্যার জন্ম নিবন্ধন নম্বর লিখুন"
                   required
                 />
               </div>
 
               <div className="field">
-                <label htmlFor="studentName">Student Full Name</label>
+                <label htmlFor="studentName">শিক্ষার্থীর পূর্ণ নাম · Student Full Name</label>
                 <input
                   id="studentName"
                   value={studentName}
@@ -282,7 +282,7 @@ setClasses(updatedClasses);
               </div>
 
               <div className="field">
-                <label htmlFor="dateOfBirth">Date of Birth</label>
+                <label htmlFor="dateOfBirth">জন্ম তারিখ · Date of Birth</label>
                 <input
                   id="dateOfBirth"
                   type="date"
@@ -293,7 +293,7 @@ setClasses(updatedClasses);
               </div>
 
               <div className="field">
-                <label htmlFor="guardianName">Guardian Name</label>
+                <label htmlFor="guardianName">অভিভাবকের নাম · Guardian Name</label>
                 <input
                   id="guardianName"
                   value={guardianName}
@@ -304,7 +304,7 @@ setClasses(updatedClasses);
               </div>
 
               <div className="field">
-                <label htmlFor="guardianPhone">Guardian Phone</label>
+                <label htmlFor="guardianPhone">অভিভাবকের মোবাইল · Guardian Phone</label>
                 <input
                   id="guardianPhone"
                   type="tel"
@@ -355,7 +355,7 @@ setClasses(updatedClasses);
           className="primary-button modal-payment-button"
           onClick={() => handlePayment(hold.id, studentId)}
         >
-          Pay Admission Fee
+         ভর্তি ফি প্রদান করুন · Pay Admission Fee
         </button>
  
       )}
@@ -366,7 +366,7 @@ setClasses(updatedClasses);
     className="cancel-button"
     onClick={() => handleCancel(hold.id, studentId)}
   >
-    Cancel Reservation
+    আসন বাতিল করুন · Cancel Reservation
   </button>
 )}
 
@@ -385,8 +385,8 @@ setClasses(updatedClasses);
         <section className="panel">
           <div className="section-heading">
             <div>
-              <h3>Available Classes</h3>
-              <p>Choose a class and shift for admission.</p>
+             <h3>শ্রেণিসমূহ · Available Classes</h3>
+<p>ভর্তির জন্য আপনার পছন্দের শ্রেণি ও শিফট নির্বাচন করুন।</p>
             </div>
           </div>
 
@@ -410,10 +410,10 @@ setClasses(updatedClasses);
   </div>
 
  <div className="seat-count">
-  <p>Total: {schoolClass.totalSeats}</p>
-  <p>Held: {schoolClass.heldSeats}</p>
-  <p>Confirmed: {schoolClass.confirmedSeats}</p>
-  <p>Available: {schoolClass.availableSeats}</p>
+  <p>মোট আসন · Total: {schoolClass.totalSeats}</p>
+  <p>সাময়িক সংরক্ষিত · Held: {schoolClass.heldSeats}</p>
+  <p>নিশ্চিত ভর্তি · Confirmed: {schoolClass.confirmedSeats}</p>
+  <p>খালি আসন · Available: {schoolClass.availableSeats}</p>
 </div>
 
   <button
@@ -448,7 +448,7 @@ setClasses(updatedClasses);
     className="primary-button"
     disabled={submitting}
   >
-    {submitting ? "Processing..." : "Reserve My Seat"}
+    {submitting ? "প্রক্রিয়াধীন..." : "আসন সংরক্ষণ করুন · Reserve My Seat"}
   </button>
 )}
         </section>
@@ -458,17 +458,17 @@ setClasses(updatedClasses);
         <section className="panel">
   <div className="section-heading">
     <div>
-      <h3>My Admissions</h3>
-      <p>View your seat reservations and admission status.</p>
+     <h3>আমার ভর্তি আবেদনসমূহ · My Admissions</h3>
+      <p>আপনার ভর্তি আবেদনের অবস্থা দেখুন ও পরিচালনা করুন।</p>
       <div className="field">
   <label htmlFor="admissionsStudentId">
-    Birth Registration Number
+    জন্ম নিবন্ধন নম্বর · Birth Registration Number
   </label>
   <input
     id="admissionsStudentId"
     value={admissionsStudentId}
     onChange={(event) => setAdmissionsStudentId(event.target.value)}
-    placeholder="Enter your 17-digit number"
+   placeholder="১৭ সংখ্যার জন্ম নিবন্ধন নম্বর লিখুন"
     maxLength={17}
   />
 </div>
@@ -478,12 +478,12 @@ setClasses(updatedClasses);
   onClick={loadMyAdmissions}
   disabled={holdsLoading}
 >
-  {holdsLoading ? "Loading..." : "Load My Admissions"}
+  {holdsLoading ? "লোড হচ্ছে..." : "ভর্তির আবেদন দেখুন · Load My Admissions"}
 </button>
     </div>
   </div>
 
-  {holdsLoading && <p>Loading admission records...</p>}
+ {holdsLoading && <p>ভর্তির তথ্য লোড হচ্ছে...</p>}
 
   {holdsError && (
     <p className="error-message">{holdsError}</p>
@@ -492,8 +492,8 @@ setClasses(updatedClasses);
   {!holdsLoading && !holdsError && myHolds.length === 0 && (
     <div className="empty-state">
       <div className="empty-icon">▤</div>
-      <p>No admission records found.</p>
-      <span>Your reservations will appear here.</span>
+     <p>কোনো ভর্তি আবেদন পাওয়া যায়নি।</p>
+<span>আপনার সংরক্ষিত আসনের তথ্য এখানে দেখা যাবে।</span>
     </div>
   )}
 
@@ -513,7 +513,7 @@ setClasses(updatedClasses);
             className="primary-button"
             onClick={() => handlePayment(item.id, admissionsStudentId.trim())}
           >
-            Pay Admission Fee
+            ভর্তি ফি প্রদান করুন · Pay Admission Fee
           </button>
         </>
       )}
@@ -526,7 +526,7 @@ setClasses(updatedClasses);
       handleCancel(item.id, admissionsStudentId.trim())
     }
   >
-    Cancel Reservation
+    আসন বাতিল করুন · Cancel Reservation
   </button>
 )}
     </div>
@@ -536,9 +536,9 @@ setClasses(updatedClasses);
   )}
 </section>
 
-        <footer>
-          School Admission System · Student Portal
-        </footer>
+     <footer>
+  Onnorokom Projukti School · অনন্যরকম প্রযুক্তি স্কুল · Student Portal
+</footer>
       </main>
     </div>
   );

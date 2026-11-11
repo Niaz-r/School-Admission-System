@@ -4,11 +4,11 @@ function HomePage({ onAdmissionClick, onAdminClick }) {
     <div className="app">
       <header className="header">
         <div className="brand">
-          <div className="brand-icon">S</div>
+          <div className="brand-icon">O</div>
 
           <div>
-            <h1>School Admission</h1>
-            <p>Admission Management System</p>
+            <h1>Onnorokom Projukti School</h1>
+<p>Online School Admission Portal</p>
           </div>
         </div>
 
@@ -23,22 +23,30 @@ function HomePage({ onAdmissionClick, onAdminClick }) {
 
       <main className="container">
         <section className="welcome">
-          <p className="eyebrow">WELCOME</p>
+          <p className="eyebrow">ADMISSION OPEN 2027</p>
 
-          <h2>Welcome to Our School</h2>
+<h2>ভর্তি কার্যক্রম চলছে — Admission Open!</h2>
 
-          <p>
-            Discover our school and begin your admission journey.
-          </p>
+<p>
+  Onnorokom Projukti School-এ ভর্তি কার্যক্রম চলছে।
+  আজই আপনার সন্তানের Admission Application সম্পন্ন করুন।
+</p>
 
           <button
             type="button"
             className="primary-button"
             onClick={onAdmissionClick}
           >
-            Admission
+            ভর্তি আবেদন করুন
           </button>
         </section>
+
+        <section className="school-banner">
+  <img
+    src="/banner.jpeg"
+    alt="Onnorokom Projukti School"
+  />
+</section>
       </main>
     </div>
   );

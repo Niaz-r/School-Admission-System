@@ -39,7 +39,7 @@ function AdminPage({ onBack, onLogin }) {
       <main className="container">
         <section className="panel">
           <h2>Admin Access</h2>
-          <p>Enter the admin password to continue.</p>
+          <p>Enter the admin password "admin123" to continue.</p>
 
           <form onSubmit={handleSubmit}>
             <div className="field">
