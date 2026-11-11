@@ -47,4 +47,4 @@ services:
 
 volumes:
   school_postgres_data:
-    external: true
+    name: school_postgres_data
